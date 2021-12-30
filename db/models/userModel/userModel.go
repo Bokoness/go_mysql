@@ -24,3 +24,7 @@ func (u User) Save() {
 func (u User) Destroy() {
 	db.Destroy(model, u.ID)
 }
+
+func (u User) ValidatePass() {
+
+}

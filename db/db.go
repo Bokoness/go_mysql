@@ -17,17 +17,26 @@ func exec(q string, vals []interface{}) sql.Result {
 	return res
 }
 
+func query(q string) *sql.Rows {
+	db, e := sql.Open("mysql", "root:321123@/go")
+	rows, e := db.Query(q)
+	ErrorCheck(e)
+	return rows
+}
+
 func Insert(m string, data map[string]string) int64 {
-	q, params := createInsertQuery(m, data)
-	res := exec(q, params)
+	res := exec(createInsertQuery(m, data))
 	id, e := res.LastInsertId()
 	ErrorCheck(e)
 	return id
 }
 
+func Show(m string, id int64) *sql.Rows {
+	return query(fmt.Sprintf("select * from %s where id=%d", m, id))
+}
+
 func Destroy(m string, id int64) bool {
-	q, params := createDeleteQuery(m, id)
-	res := exec(q, params)
+	res := exec(createDeleteQuery(m, id))
 	a, e := res.RowsAffected()
 	ErrorCheck(e)
 	return a > 1
@@ -50,7 +59,7 @@ func createInsertQuery(m string, data map[string]string) (string, []interface{})
 }
 
 func createDeleteQuery(m string, id int64) (string, []interface{}) {
-	q := fmt.Sprintf("delete from %s where id=?", m)
+	q := fmt.Sprintf("select * from %s where id=?", m)
 	var params []interface{}
 	params = append(params, fmt.Sprint(id))
 	return q, params
