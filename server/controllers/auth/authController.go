@@ -24,6 +24,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewDecoder(r.Body).Decode(&body)
 
 	//TODO: fetch real user and compare passwords
+
 	if !services.ComparePasswords(body.Password, "asdasd") {
 		fmt.Println("NOT GOOD") //TODO: do something
 	}

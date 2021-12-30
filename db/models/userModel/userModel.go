@@ -25,6 +25,10 @@ func (u User) Destroy() {
 	db.Destroy(model, u.ID)
 }
 
+func FindByEmail() {
+	//TODO: create find by email query
+}
+
 func (u User) ValidatePass() {
 
 }

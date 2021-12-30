@@ -1,9 +1,11 @@
 package server
 
 import (
+	"fmt"
 	"go_mysql/server/routes"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gookit/color"
 	"github.com/gorilla/mux"
@@ -13,6 +15,8 @@ func LunchServer() {
 	r := mux.NewRouter()
 	routes.CreateAuthRoutes(r)
 	routes.CreateUserRoutes(r)
-	color.Cyan.Println("Server is running on port 8000")
-	log.Fatal(http.ListenAndServe("127.0.0.1:8000", r))
+	h := os.Getenv("HOST")
+	p := os.Getenv("PORT")
+	color.Cyan.Printf("Server is running on port %s", p)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf("%s:%s", h, p), r))
 }
