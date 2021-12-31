@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"go_mysql/db"
 	Services "go_mysql/services"
-	"net/http"
 )
 
 const model = "users"
@@ -44,8 +43,4 @@ func FindById(uid int64) User {
 		rows.Scan(&u.ID, &u.UserName, &u.Password)
 	}
 	return u
-}
-
-func GetActiveUser(r *http.Request) {
-
 }

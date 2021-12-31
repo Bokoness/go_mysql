@@ -16,3 +16,14 @@ func Store(r *http.Request) {
 	t.Uid = u.ID
 	t.Save()
 }
+
+func Index(r *http.Request, w http.ResponseWriter) []byte {
+	w.Header().Set("Content-Type", "application/json")
+	u, _ := middleware.FetchUserFromCookie(r)
+	todos := todoModel.FindManyById(u.ID)
+	todoJson, e := json.Marshal(todos)
+	if e != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	return todoJson
+}

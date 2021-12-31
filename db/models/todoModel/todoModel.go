@@ -25,3 +25,15 @@ func (t Todo) Save() {
 func (t Todo) Destroy() {
 	db.Destroy(model, t.ID)
 }
+
+func FindManyById(uid int64) []Todo {
+	var todos []Todo
+	q := fmt.Sprintf("select * from %s where uid=\"%d\"", model, uid)
+	rows := db.Find(model, q)
+	for rows.Next() {
+		var t Todo
+		rows.Scan(&t.ID, &t.Title, &t.Content, &t.Uid)
+		todos = append(todos, t)
+	}
+	return todos
+}
