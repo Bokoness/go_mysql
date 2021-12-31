@@ -1,12 +1,13 @@
 package routes
 
 import (
-	controller "go_mysql/server/controllers/user"
+	handler "go_mysql/server/handlers/user"
 
-	"github.com/gorilla/mux"
+	"github.com/go-martini/martini"
 )
 
-func CreateUserRoutes(r *mux.Router) {
-	userRoutes := r.PathPrefix("/user").Subrouter()
-	userRoutes.HandleFunc("/{id}", controller.Destroy).Methods("DELETE")
+func UserRoutes(m *martini.ClassicMartini) {
+	m.Group("/user", func(r martini.Router) {
+		r.Delete("/:id", handler.Destroy)
+	})
 }

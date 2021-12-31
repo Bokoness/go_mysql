@@ -1,15 +1,14 @@
 package routes
 
 import (
-	controller "go_mysql/server/controllers/todo"
-	auth "go_mysql/server/middleware"
+	handler "go_mysql/server/handlers/todo"
+	"go_mysql/server/middleware"
 
-	"github.com/gorilla/mux"
+	"github.com/go-martini/martini"
 )
 
-func CreateTodoRoutes(r *mux.Router) {
-	todoRoutes := r.PathPrefix("/todo").Subrouter()
-	todoRoutes.HandleFunc("/", controller.Store).Methods("POST")
-	todoRoutes.Use(auth.UserAuth)
-	// authRoutes.HandleFunc("/index", controller.Register).Methods("POST")
+func TodoRoutes(m *martini.ClassicMartini) {
+	m.Group("/todo", func(r martini.Router) {
+		r.Post("/", middleware.UserAuth, handler.Store)
+	})
 }

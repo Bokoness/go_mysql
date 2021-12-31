@@ -5,7 +5,7 @@ import (
 	"go_mysql/db"
 )
 
-const model = "users"
+const model = "todos"
 
 type Todo struct {
 	ID      int64  `json:"id"`

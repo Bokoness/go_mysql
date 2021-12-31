@@ -46,7 +46,6 @@ func FindById(uid int64) User {
 	return u
 }
 
-func GetActiveUser(r *http.Request) User {
-	ctx := r.Context().Value("user")
-	return ctx.(User)
+func GetActiveUser(r *http.Request) {
+
 }

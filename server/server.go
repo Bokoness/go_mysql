@@ -1,23 +1,21 @@
 package server
 
 import (
-	"fmt"
 	"go_mysql/server/routes"
-	"log"
-	"net/http"
 	"os"
 
+	"github.com/go-martini/martini"
 	"github.com/gookit/color"
-	"github.com/gorilla/mux"
 )
 
 func LunchServer() {
-	r := mux.NewRouter()
-	routes.CreateAuthRoutes(r)
-	routes.CreateUserRoutes(r)
-	routes.CreateTodoRoutes(r)
-	h := os.Getenv("HOST")
+	m := martini.Classic()
+
+	routes.AuthRoutes(m)
+	routes.UserRoutes(m)
+	routes.TodoRoutes(m)
+
 	p := os.Getenv("PORT")
 	color.Cyan.Printf("Server is running on port %s", p)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf("%s:%s", h, p), r))
+	m.Run()
 }
