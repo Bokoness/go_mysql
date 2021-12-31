@@ -15,6 +15,7 @@ func LunchServer() {
 	r := mux.NewRouter()
 	routes.CreateAuthRoutes(r)
 	routes.CreateUserRoutes(r)
+	routes.CreateTodoRoutes(r)
 	h := os.Getenv("HOST")
 	p := os.Getenv("PORT")
 	color.Cyan.Printf("Server is running on port %s", p)

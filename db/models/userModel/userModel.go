@@ -3,7 +3,8 @@ package userModel
 import (
 	"fmt"
 	"go_mysql/db"
-	"go_mysql/services"
+	Services "go_mysql/services"
+	"net/http"
 )
 
 const model = "users"
@@ -15,7 +16,7 @@ type User struct {
 }
 
 func (u User) Save() {
-	u.Password = services.Hash(u.Password)
+	u.Password = Services.Hash(u.Password)
 	data := make(map[string]string)
 	data["username"] = u.UserName
 	data["password"] = u.Password
@@ -36,6 +37,16 @@ func FindByUsername(username string) User {
 	return u
 }
 
-func (u User) ValidatePass() {
+func FindById(uid int64) User {
+	var u User
+	rows := db.FindById(model, uid)
+	for rows.Next() {
+		rows.Scan(&u.ID, &u.UserName, &u.Password)
+	}
+	return u
+}
 
+func GetActiveUser(r *http.Request) User {
+	ctx := r.Context().Value("user")
+	return ctx.(User)
 }
