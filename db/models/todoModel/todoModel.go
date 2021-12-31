@@ -47,3 +47,9 @@ func FindManyById(uid int64) []Todo {
 	}
 	return todos
 }
+
+func DeleteById(id int64, uid int64) {
+	// db.Destroy(model, id)
+
+	db.SafeDestroy(model, id, uid)
+}

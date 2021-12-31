@@ -46,6 +46,14 @@ func Destroy(m string, id int64) bool {
 	return a > 1
 }
 
+func SafeDestroy(m string, id int64, uid int64) {
+	q := fmt.Sprintf("DELETE FROM %s WHERE id=? AND uid=?", m)
+	var params []interface{}
+	params = append(params, fmt.Sprint(id))
+	params = append(params, fmt.Sprint(uid))
+	exec(q, params)
+}
+
 func createInsertQuery(m string, data map[string]string) (string, []interface{}) {
 	fields := "("
 	qVals := "("
@@ -63,7 +71,7 @@ func createInsertQuery(m string, data map[string]string) (string, []interface{})
 }
 
 func createDeleteQuery(m string, id int64) (string, []interface{}) {
-	q := fmt.Sprintf("select * from %s where id=?", m)
+	q := fmt.Sprintf("DELETE FROM %s WHERE id=?", m)
 	var params []interface{}
 	params = append(params, fmt.Sprint(id))
 	return q, params

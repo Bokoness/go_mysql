@@ -30,7 +30,7 @@ func Index(r *http.Request, w http.ResponseWriter) []byte {
 	return json
 }
 
-func Show(r *http.Request, w http.ResponseWriter, p martini.Params) []byte {
+func Show(w http.ResponseWriter, p martini.Params) []byte {
 	w.Header().Set("Content-Type", "application/json")
 	id, e := strconv.ParseInt(p["id"], 10, 64)
 	if e != nil {
@@ -42,4 +42,13 @@ func Show(r *http.Request, w http.ResponseWriter, p martini.Params) []byte {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 	return json
+}
+
+func Destroy(r *http.Request, w http.ResponseWriter, p martini.Params) {
+	id, e := strconv.ParseInt(p["id"], 10, 64)
+	u, _ := middleware.FetchUserFromCookie(r)
+	if e != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	todoModel.DeleteById(id, u.ID)
 }

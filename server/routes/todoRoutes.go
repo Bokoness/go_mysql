@@ -12,5 +12,6 @@ func TodoRoutes(m *martini.ClassicMartini) {
 		r.Get("/", middleware.UserAuth, handler.Index)
 		r.Get("/:id", middleware.UserAuth, handler.Show)
 		r.Post("/", middleware.UserAuth, handler.Store)
+		r.Delete("/:id", middleware.UserAuth, handler.Destroy)
 	})
 }
