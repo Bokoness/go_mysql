@@ -5,7 +5,9 @@ import (
 	"go_mysql/db/models/todoModel"
 	"go_mysql/server/middleware"
 	"net/http"
+	"strconv"
 
+	"github.com/go-martini/martini"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -21,9 +23,23 @@ func Index(r *http.Request, w http.ResponseWriter) []byte {
 	w.Header().Set("Content-Type", "application/json")
 	u, _ := middleware.FetchUserFromCookie(r)
 	todos := todoModel.FindManyById(u.ID)
-	todoJson, e := json.Marshal(todos)
+	json, e := json.Marshal(todos)
 	if e != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
-	return todoJson
+	return json
+}
+
+func Show(r *http.Request, w http.ResponseWriter, p martini.Params) []byte {
+	w.Header().Set("Content-Type", "application/json")
+	id, e := strconv.ParseInt(p["id"], 10, 64)
+	if e != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	todo := todoModel.FindOneById(id)
+	json, e := json.Marshal(todo)
+	if e != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	return json
 }

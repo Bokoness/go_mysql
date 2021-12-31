@@ -10,6 +10,7 @@ import (
 func TodoRoutes(m *martini.ClassicMartini) {
 	m.Group("/todo", func(r martini.Router) {
 		r.Get("/", middleware.UserAuth, handler.Index)
+		r.Get("/:id", middleware.UserAuth, handler.Show)
 		r.Post("/", middleware.UserAuth, handler.Store)
 	})
 }

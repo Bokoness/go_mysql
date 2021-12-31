@@ -26,9 +26,19 @@ func (t Todo) Destroy() {
 	db.Destroy(model, t.ID)
 }
 
+func FindOneById(id int64) Todo {
+	q := fmt.Sprintf("select * from %s where id=%d", model, id)
+	rows := db.Find(model, q)
+	var t Todo
+	for rows.Next() {
+		rows.Scan(&t.ID, &t.Title, &t.Content, &t.Uid)
+	}
+	return t
+}
+
 func FindManyById(uid int64) []Todo {
 	var todos []Todo
-	q := fmt.Sprintf("select * from %s where uid=\"%d\"", model, uid)
+	q := fmt.Sprintf("select * from %s where uid=%d", model, uid)
 	rows := db.Find(model, q)
 	for rows.Next() {
 		var t Todo
