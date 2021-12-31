@@ -31,8 +31,12 @@ func Insert(m string, data map[string]string) int64 {
 	return id
 }
 
-func Show(m string, id int64) *sql.Rows {
+func FindById(m string, id int64) *sql.Rows {
 	return query(fmt.Sprintf("select * from %s where id=%d", m, id))
+}
+
+func Find(m string, q string) *sql.Rows {
+	return query(q)
 }
 
 func Destroy(m string, id int64) bool {

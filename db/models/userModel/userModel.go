@@ -1,6 +1,7 @@
 package userModel
 
 import (
+	"fmt"
 	"go_mysql/db"
 	"go_mysql/services"
 )
@@ -25,8 +26,14 @@ func (u User) Destroy() {
 	db.Destroy(model, u.ID)
 }
 
-func FindByEmail() {
-	//TODO: create find by email query
+func FindByUsername(username string) User {
+	var u User
+	q := fmt.Sprintf("select * from %s where username=\"%s\"", model, username)
+	rows := db.Find(model, q)
+	for rows.Next() {
+		rows.Scan(&u.ID, &u.UserName, &u.Password)
+	}
+	return u
 }
 
 func (u User) ValidatePass() {

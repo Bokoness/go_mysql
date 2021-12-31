@@ -11,30 +11,24 @@ import (
 )
 
 func Register(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 	var u userModel.User
 	_ = json.NewDecoder(r.Body).Decode(&u)
 	u.Save()
-
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 	var body userModel.User
 	_ = json.NewDecoder(r.Body).Decode(&body)
+	u := userModel.FindByUsername(body.UserName)
+	fmt.Println(u.ID)
 
-	//TODO: fetch real user and compare passwords
-
-	if !services.ComparePasswords(body.Password, "asdasd") {
-		fmt.Println("NOT GOOD") //TODO: do something
+	if !services.ComparePasswords(u.Password, body.Password) {
+		http.Error(w, "Forbidden", http.StatusUnauthorized)
+		return
 	}
+	services.CreateCookieToken(u.ID, w)
+}
 
-	// token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{"uid": u.ID})
-	// hash, e := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
-	// if e != nil {
-	// 	http.Error(w, "Cant log in", 500)
-	// }
-	// c := http.Cookie{Name: "uid", Value: hash, Path: "/"}
-	// http.SetCookie(w, &c)
-	// fmt.Fprintf(w, "User is now logged in, this is token: %s", hash)
+func Logout(w http.ResponseWriter, r *http.Request) {
+	services.ClearAuth(w)
 }
