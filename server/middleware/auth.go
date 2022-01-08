@@ -1,33 +1,36 @@
 package middleware
 
 import (
+	"context"
+	"github.com/dgrijalva/jwt-go"
+	"github.com/go-martini/martini"
 	"go_mysql/db/models/userModel"
 	"net/http"
 	"os"
-
-	"github.com/dgrijalva/jwt-go"
-	"github.com/go-martini/martini"
 )
 
-// func UserAuth(next http.Handler) http.Handler {
-// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-// 		u, e := fetchUserFromCookie(r)
-// 		if e != nil {
-// 			http.Error(w, "UnAuthorized", http.StatusUnauthorized)
-// 			return
-// 		}
-// 		//inserting user into context
-// 		ctx := context.WithValue(r.Context(), "user", u)
-// 		next.ServeHTTP(w, r.WithContext(ctx))
-// 	})
-// }
+func UserAuth2(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		u, e := FetchUserFromCookie(r)
+		if e != nil {
+			http.Error(w, "UnAuthorized", http.StatusUnauthorized)
+			return
+		}
+		//inserting user into context
+		ctx := context.WithValue(r.Context(), "user", u)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
 
-func UserAuth(w http.ResponseWriter, r *http.Request, c martini.Context) {
+
+
+func UserAuth(w http.ResponseWriter, r *http.Request, c martini.Context) http.Handler{
 	_, e := FetchUserFromCookie(r)
 	if e != nil {
 		http.Error(w, "UnAuthorized", http.StatusUnauthorized)
-		return
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})
 	}
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){})
 }
 
 func FetchUserFromCookie(r *http.Request) (*userModel.User, error) {

@@ -8,7 +8,9 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func Destroy(w http.ResponseWriter, r *http.Request) {
+func Destroy(r *http.Request) {
 	u := userModel.User{ID: services.ParseIdFromReq(r)}
 	u.Destroy()
 }
+
+

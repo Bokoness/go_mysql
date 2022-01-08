@@ -2,7 +2,6 @@ package auth
 
 import (
 	"encoding/json"
-	"fmt"
 	"go_mysql/db/models/userModel"
 	"go_mysql/services"
 	"net/http"
@@ -20,8 +19,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	var body userModel.User
 	_ = json.NewDecoder(r.Body).Decode(&body)
 	u := userModel.FindByUsername(body.UserName)
-	fmt.Println(u.ID)
-
 	if !services.ComparePasswords(u.Password, body.Password) {
 		http.Error(w, "Forbidden", http.StatusUnauthorized)
 		return

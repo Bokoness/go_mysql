@@ -1,6 +1,7 @@
 package services
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -28,7 +29,7 @@ func CreateCookieToken(uid int64, w http.ResponseWriter) {
 	claims := customClaims{
 		Uid: uid,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: int64(time.Now().Add(d).Unix()),
+			ExpiresAt: time.Now().Add(d).Unix(),
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -38,7 +39,6 @@ func CreateCookieToken(uid int64, w http.ResponseWriter) {
 	}
 	c := http.Cookie{Name: "uid", Value: hash, Path: "/"}
 	http.SetCookie(w, &c)
-	fmt.Fprint(w, "User is now logged in")
 }
 
 func ClearAuth(w http.ResponseWriter) {
@@ -49,4 +49,13 @@ func ClearAuth(w http.ResponseWriter) {
 		MaxAge: -1,
 	}
 	http.SetCookie(w, &c)
+}
+
+func BodyIntoMap(r *http.Request) (map[string]string, error) {
+	m := make(map[string]string)
+	e := json.NewDecoder(r.Body).Decode(&m)
+	if e != nil {
+		return nil, e
+	}
+	return m, nil
 }

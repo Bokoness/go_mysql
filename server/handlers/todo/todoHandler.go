@@ -16,18 +16,18 @@ func Store(r *http.Request) {
 	_ = json.NewDecoder(r.Body).Decode(&t)
 	u, _ := middleware.FetchUserFromCookie(r)
 	t.Uid = u.ID
-	t.Save()
+	t.Store()
 }
 
 func Index(r *http.Request, w http.ResponseWriter) []byte {
 	w.Header().Set("Content-Type", "application/json")
 	u, _ := middleware.FetchUserFromCookie(r)
 	todos := todoModel.FindManyById(u.ID)
-	json, e := json.Marshal(todos)
+	j, e := json.Marshal(todos)
 	if e != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
-	return json
+	return j
 }
 
 func Show(w http.ResponseWriter, p martini.Params) []byte {
@@ -37,11 +37,26 @@ func Show(w http.ResponseWriter, p martini.Params) []byte {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 	todo := todoModel.FindOneById(id)
-	json, e := json.Marshal(todo)
+	j, e := json.Marshal(todo)
 	if e != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
-	return json
+	return j
+}
+
+func Update(r *http.Request, w http.ResponseWriter, p martini.Params) {
+	var t todoModel.Todo
+	if e := json.NewDecoder(r.Body).Decode(&t) ; e != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+	id, e := strconv.ParseInt(p["id"], 10, 64)
+	if e != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+	u, _ := middleware.FetchUserFromCookie(r)
+	t.ID = id
+	t.Uid = u.ID
+	t.Save()
 }
 
 func Destroy(r *http.Request, w http.ResponseWriter, p martini.Params) {

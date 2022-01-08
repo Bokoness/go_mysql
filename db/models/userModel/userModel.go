@@ -14,22 +14,35 @@ type User struct {
 	Password string `json:"password"`
 }
 
+func (u User) Store () int64 {
+	q := fmt.Sprintf(`INSERT INTO %s(username, password) VALUES (?,?)`, model)
+	var params []interface{}
+	params = append(params, u.UserName)
+	params = append(params, u.Password)
+	return db.Insert(q, params)
+}
+
 func (u User) Save() {
+	q := fmt.Sprintf(`UPDATE %s SET username=?, password=? WHERE id=?`, model)
+	var params []interface{}
 	u.Password = Services.Hash(u.Password)
-	data := make(map[string]string)
-	data["username"] = u.UserName
-	data["password"] = u.Password
-	u.ID = db.Insert(model, data)
+	params = append(params, u.UserName)
+	params = append(params, u.Password)
+	params = append(params, u.ID)
+	db.Exec(q, params)
 }
 
 func (u User) Destroy() {
-	db.Destroy(model, u.ID)
+	q := fmt.Sprintf("DELETE FROM %s WHERE id=?", model)
+	var params []interface{}
+	params = append(params, u.ID)
+	db.Exec(q, params)
 }
 
 func FindByUsername(username string) User {
 	var u User
 	q := fmt.Sprintf("select * from %s where username=\"%s\"", model, username)
-	rows := db.Find(model, q)
+	rows := db.Find(q)
 	for rows.Next() {
 		rows.Scan(&u.ID, &u.UserName, &u.Password)
 	}
