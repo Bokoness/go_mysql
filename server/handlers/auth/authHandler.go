@@ -18,7 +18,7 @@ func Register(r *http.Request) {
 func Login(w http.ResponseWriter, r *http.Request) {
 	var body userModel.User
 	_ = json.NewDecoder(r.Body).Decode(&body)
-	u := userModel.FindByUsername(body.UserName)
+	u := userModel.FindByUsername(body.Username)
 	if !services.ComparePasswords(u.Password, body.Password) {
 		http.Error(w, "Forbidden", http.StatusUnauthorized)
 		return

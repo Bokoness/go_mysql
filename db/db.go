@@ -5,10 +5,21 @@ import (
 	"fmt"
 
 	_ "github.com/go-sql-driver/mysql"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
+func connect() *gorm.DB {
+	dsn := "root:321123@tcp(127.0.0.1:3306)/go_mysql?charset=utf8mb4&parseTime=True&loc=Local"
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		panic("No connection to database")
+	}
+	return db
+}
+
 func Exec(q string, params []interface{}) sql.Result {
-	db, e := sql.Open("mysql", "root:321123@/go")
+	db, e := sql.Open("mysql", "root:321123@/go_mysql")
 	defer db.Close()
 	ErrorCheck(e)
 	stmt, e := db.Prepare(q)
@@ -19,7 +30,7 @@ func Exec(q string, params []interface{}) sql.Result {
 }
 
 func Query(q string) *sql.Rows {
-	db, e := sql.Open("mysql", "root:321123@/go")
+	db, e := sql.Open("mysql", "root:321123@/go_mysql")
 	defer db.Close()
 	rows, e := db.Query(q)
 	ErrorCheck(e)
