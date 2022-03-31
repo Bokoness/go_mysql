@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"context"
-	models "go_mysql/db/models"
+	"go_mysql/db/models"
 	"net/http"
 	"os"
 
