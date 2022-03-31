@@ -2,16 +2,20 @@ package todo
 
 import (
 	"encoding/json"
+	"fmt"
 	"go_mysql/db/models"
 	"go_mysql/server/middleware"
 	"net/http"
 	"strconv"
 
-	"github.com/go-martini/martini"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/gorilla/mux"
 )
 
-func Store(r *http.Request) {
+func Store(w http.ResponseWriter, r *http.Request) {
+	//TODO: fetch User from c
+	c := r.Context().Value("user")
+	fmt.Println(c)
 	var t models.Todo
 	_ = json.NewDecoder(r.Body).Decode(&t)
 	u, _ := middleware.FetchUserFromCookie(r)
@@ -19,7 +23,7 @@ func Store(r *http.Request) {
 	t.Create()
 }
 
-func Index(r *http.Request, w http.ResponseWriter) []byte {
+func Index(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	u, _ := middleware.FetchUserFromCookie(r)
 	todos := u.LoadTodos()
@@ -27,12 +31,13 @@ func Index(r *http.Request, w http.ResponseWriter) []byte {
 	if e != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
-	return j
+	w.Write(j)
 }
 
-func Show(w http.ResponseWriter, p martini.Params) []byte {
+func Show(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
 	w.Header().Set("Content-Type", "application/json")
-	id, e := strconv.ParseInt(p["id"], 10, 64)
+	id, e := strconv.ParseInt(vars["id"], 10, 64)
 	if e != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
@@ -42,15 +47,16 @@ func Show(w http.ResponseWriter, p martini.Params) []byte {
 	if e != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
-	return j
+	w.Write(j)
 }
 
-func Update(r *http.Request, w http.ResponseWriter, p martini.Params) {
+func Update(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
 	var t models.Todo
 	if e := json.NewDecoder(r.Body).Decode(&t); e != nil {
 		w.WriteHeader(http.StatusBadRequest)
 	}
-	id, e := strconv.ParseInt(p["id"], 10, 64)
+	id, e := strconv.ParseInt(vars["id"], 10, 64)
 	if e != nil {
 		w.WriteHeader(http.StatusBadRequest)
 	}
@@ -60,8 +66,9 @@ func Update(r *http.Request, w http.ResponseWriter, p martini.Params) {
 	t.Save()
 }
 
-func Destroy(r *http.Request, w http.ResponseWriter, p martini.Params) {
-	id, e := strconv.ParseInt(p["id"], 10, 64)
+func Destroy(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, e := strconv.ParseInt(vars["id"], 10, 64)
 	u, _ := middleware.FetchUserFromCookie(r)
 	if e != nil {
 		w.WriteHeader(http.StatusInternalServerError)

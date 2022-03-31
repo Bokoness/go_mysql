@@ -7,29 +7,17 @@ import (
 	"os"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/go-martini/martini"
 )
 
-func UserAuth2(next http.Handler) http.Handler {
+func UserAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		u, e := FetchUserFromCookie(r)
 		if e != nil {
-			http.Error(w, "UnAuthorized", http.StatusUnauthorized)
-			return
+			http.Error(w, "Forbidden", http.StatusForbidden)
 		}
-		//inserting user into context
 		ctx := context.WithValue(r.Context(), "user", u)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
-}
-
-func UserAuth(w http.ResponseWriter, r *http.Request, c martini.Context) http.Handler {
-	_, e := FetchUserFromCookie(r)
-	if e != nil {
-		http.Error(w, "UnAuthorized", http.StatusUnauthorized)
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})
-	}
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})
 }
 
 func FetchUserFromCookie(r *http.Request) (*models.User, error) {

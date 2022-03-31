@@ -9,7 +9,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func Register(r *http.Request) {
+func Register(w http.ResponseWriter, r *http.Request) {
 	var u models.User
 	_ = json.NewDecoder(r.Body).Decode(&u)
 	u.Create()
@@ -27,6 +27,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	services.CreateCookieToken(u.Id, w)
 }
 
-func Logout(w http.ResponseWriter) {
+func Logout(w http.ResponseWriter, r *http.Request) {
 	services.ClearAuth(w)
 }

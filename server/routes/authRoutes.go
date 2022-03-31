@@ -1,15 +1,14 @@
 package routes
 
 import (
-	handler "go_mysql/server/handlers/auth"
+	"go_mysql/server/handlers/auth"
 
-	"github.com/go-martini/martini"
+	"github.com/gorilla/mux"
 )
 
-func AuthRoutes(m *martini.ClassicMartini) {
-	m.Group("/auth", func(r martini.Router) {
-		r.Post("/register", handler.Register)
-		r.Post("/login", handler.Login)
-		r.Post("/logout", handler.Logout)
-	})
+func AuthRoutes(r *mux.Router) {
+	s := r.PathPrefix("/auth").Subrouter()
+	s.HandleFunc("/login", auth.Login).Methods("POST")
+	s.HandleFunc("/register", auth.Register).Methods("POST")
+	s.HandleFunc("/logout", auth.Logout).Methods("POST")
 }
