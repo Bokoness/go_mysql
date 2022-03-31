@@ -2,7 +2,7 @@ package auth
 
 import (
 	"encoding/json"
-	"go_mysql/db/models/userModel"
+	"go_mysql/db/models"
 	"go_mysql/services"
 	"net/http"
 
@@ -10,20 +10,21 @@ import (
 )
 
 func Register(r *http.Request) {
-	var u userModel.User
+	var u models.User
 	_ = json.NewDecoder(r.Body).Decode(&u)
-	u.Save()
+	u.Create()
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
-	var body userModel.User
+	var body models.User
 	_ = json.NewDecoder(r.Body).Decode(&body)
-	u := userModel.FindByUsername(body.Username)
+	var u models.User
+	u.FindByUsername(body.Username)
 	if !services.ComparePasswords(u.Password, body.Password) {
 		http.Error(w, "Forbidden", http.StatusUnauthorized)
 		return
 	}
-	services.CreateCookieToken(u.ID, w)
+	services.CreateCookieToken(u.Id, w)
 }
 
 func Logout(w http.ResponseWriter) {

@@ -1,7 +1,7 @@
 package user
 
 import (
-	"go_mysql/db/models/userModel"
+	"go_mysql/db/models"
 	"go_mysql/services"
 	"net/http"
 
@@ -9,8 +9,7 @@ import (
 )
 
 func Destroy(r *http.Request) {
-	u := userModel.User{ID: services.ParseIdFromReq(r)}
+	var u models.User
+	u.FindById(services.ParseIdFromReq(r))
 	u.Destroy()
 }
-
-

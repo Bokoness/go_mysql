@@ -2,52 +2,30 @@ package main
 
 import (
 	"fmt"
-	Services "go_mysql/services"
+	models "go_mysql/db/models"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-type User struct {
-	gorm.Model
-	Id       int64  `json:"id"`
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Todos    []Todo
-}
-
-type Todo struct {
-	gorm.Model
-	Id      int64  `json:"id"`
-	Title   string `json:"title"`
-	Content string `json:"content"`
-	UserID  int64  `json:"userId"`
-	User    User
-}
-
-func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
-	u.Password = Services.Hash(u.Password)
-	return
-}
-
 func seeders(db *gorm.DB) {
-	users := []User{
+	users := []models.User{
 		{
 			Username: "bokoness",
 			Password: "321123",
 		},
 	}
-	todos := []Todo{}
+	todos := []models.Todo{}
 	for i := 0; i < 10; i++ {
 		uname := fmt.Sprintf("name%d", i)
-		users = append(users, User{
+		users = append(users, models.User{
 			Username: uname,
 			Password: "321123",
 		})
 		var j int64 = 1
 		for ; j < 5; j++ {
 			tname := fmt.Sprintf("todo%d%d", i, j)
-			todos = append(todos, Todo{
+			todos = append(todos, models.Todo{
 				Title:   tname,
 				Content: "content",
 				UserID:  j,
@@ -64,8 +42,8 @@ func migrations() {
 	if err != nil {
 		panic("No connection to database")
 	}
-	db.Migrator().CreateTable(&User{})
-	db.Migrator().CreateTable(&Todo{})
+	db.Migrator().CreateTable(&models.User{})
+	db.Migrator().CreateTable(&models.Todo{})
 	seeders(db)
 }
 

@@ -2,11 +2,12 @@ package middleware
 
 import (
 	"context"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/go-martini/martini"
-	"go_mysql/db/models/userModel"
+	models "go_mysql/db/models"
 	"net/http"
 	"os"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/go-martini/martini"
 )
 
 func UserAuth2(next http.Handler) http.Handler {
@@ -22,18 +23,16 @@ func UserAuth2(next http.Handler) http.Handler {
 	})
 }
 
-
-
-func UserAuth(w http.ResponseWriter, r *http.Request, c martini.Context) http.Handler{
+func UserAuth(w http.ResponseWriter, r *http.Request, c martini.Context) http.Handler {
 	_, e := FetchUserFromCookie(r)
 	if e != nil {
 		http.Error(w, "UnAuthorized", http.StatusUnauthorized)
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})
 	}
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){})
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})
 }
 
-func FetchUserFromCookie(r *http.Request) (*userModel.User, error) {
+func FetchUserFromCookie(r *http.Request) (*models.User, error) {
 	c, err := r.Cookie("uid")
 	if err != nil {
 		return nil, err
@@ -53,7 +52,7 @@ func FetchUserFromCookie(r *http.Request) (*userModel.User, error) {
 	if t == nil || e != nil {
 		return nil, e
 	}
-
-	u := userModel.FindById(claims.Uid)
+	var u models.User
+	u.FindById(claims.Uid)
 	return &u, nil
 }
