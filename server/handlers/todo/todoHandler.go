@@ -19,7 +19,6 @@ func Store(w http.ResponseWriter, r *http.Request) {
 }
 
 func Index(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 	u := middleware.FetchUserFromCtx(r)
 	u.LoadTodos()
 	j, e := json.Marshal(u.Todos)
@@ -31,7 +30,6 @@ func Index(w http.ResponseWriter, r *http.Request) {
 
 func Show(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	w.Header().Set("Content-Type", "application/json")
 	id, e := strconv.ParseInt(vars["id"], 10, 64)
 	if e != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -71,8 +69,7 @@ func Destroy(w http.ResponseWriter, r *http.Request) {
 	var t models.Todo
 	t.FindById(id)
 	if t.Id != u.Id {
-		//TODO: throw error
-		return
+		w.WriteHeader(http.StatusUnauthorized)
 	}
 	t.Destroy()
 }

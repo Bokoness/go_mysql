@@ -1,6 +1,7 @@
 package server
 
 import (
+	"go_mysql/server/middleware"
 	"go_mysql/server/routes"
 	"net/http"
 
@@ -11,5 +12,6 @@ func LunchServer() {
 	r := mux.NewRouter()
 	routes.TodoRoutes(r)
 	routes.AuthRoutes(r)
+	r.Use(middleware.ServerHeaders)
 	http.ListenAndServe(":8000", r)
 }
