@@ -20,6 +20,12 @@ func UserAuth(next http.Handler) http.Handler {
 	})
 }
 
+func FetchUserFromCtx(r *http.Request) *models.User {
+	c := r.Context().Value("user")
+	var user *models.User = c.(*models.User)
+	return user
+}
+
 func FetchUserFromCookie(r *http.Request) (*models.User, error) {
 	c, err := r.Cookie("uid")
 	if err != nil {

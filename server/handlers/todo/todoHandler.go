@@ -2,20 +2,15 @@ package todo
 
 import (
 	"encoding/json"
-	"fmt"
 	"go_mysql/db/models"
 	"go_mysql/server/middleware"
 	"net/http"
 	"strconv"
 
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 )
 
 func Store(w http.ResponseWriter, r *http.Request) {
-	//TODO: fetch User from c
-	c := r.Context().Value("user")
-	fmt.Println(c)
 	var t models.Todo
 	_ = json.NewDecoder(r.Body).Decode(&t)
 	u, _ := middleware.FetchUserFromCookie(r)
@@ -25,9 +20,9 @@ func Store(w http.ResponseWriter, r *http.Request) {
 
 func Index(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	u, _ := middleware.FetchUserFromCookie(r)
-	todos := u.LoadTodos()
-	j, e := json.Marshal(todos)
+	u := middleware.FetchUserFromCtx(r)
+	u.LoadTodos()
+	j, e := json.Marshal(u.Todos)
 	if e != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}

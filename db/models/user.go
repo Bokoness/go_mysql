@@ -41,8 +41,8 @@ func (u *User) Destroy() {
 	mdb.Delete(&u)
 }
 
-func (u *User) LoadTodos() []Todo {
+func (u *User) LoadTodos() {
 	var todos []Todo
 	mdb.Where("user_id = ?", u.Id).Find(&todos)
-	return todos
+	u.Todos = todos
 }
