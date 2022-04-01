@@ -10,7 +10,7 @@ import (
 type User struct {
 	gorm.Model
 	Id       int64  `json:"id"`
-	Username string `json:"username"`
+	Username string `gorm:"unique" json:"username"`
 	Password string `json:"password"`
 	Todos    []Todo
 }
