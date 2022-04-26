@@ -1,9 +1,14 @@
 package main
 
 import (
-	"go_mysql/server"
+	"fmt"
+	"go_mysql/routes"
 	"log"
+	"net/http"
+	"os"
 
+	"github.com/fatih/color"
+	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 )
 
@@ -15,6 +20,14 @@ func init() {
 }
 
 func main() {
+	LunchServer()
+}
 
-	server.LunchServer()
+func LunchServer() {
+	r := mux.NewRouter()
+	routes.AuthRoutes(r)
+	routes.TodoRoutes(r)
+	port := fmt.Sprintf(":%s", os.Getenv("PORT"))
+	color.Green("Server is running on port %s", port)
+	http.ListenAndServe(port, r)
 }

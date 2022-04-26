@@ -1,6 +1,11 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"encoding/json"
+	"io"
+
+	"gorm.io/gorm"
+)
 
 type Todo struct {
 	gorm.Model
@@ -11,24 +16,48 @@ type Todo struct {
 	User    User
 }
 
-func (t *Todo) FindById(id int64) {
-	mdb.First(&t, id)
+type TodoModule struct {
+	Todo  Todo
+	Todos []Todo
 }
 
-func (t *Todo) Create() {
-	mdb.Create(&t)
+func (t *TodoModule) Show(id int64) {
+	mdb.First(&t.Todo, id)
 }
 
-func (t *Todo) Save() {
-	mdb.Save(&t)
+func (t *TodoModule) Create(uid int64) {
+	t.Todo.UserID = uid
+	mdb.Create(&t.Todo)
 }
 
-func (t *Todo) Destroy() {
-	mdb.Delete(&t)
+func (t *TodoModule) Save() {
+	mdb.Save(&t.Todo)
 }
 
-func (t Todo) Index() []Todo {
-	var todos []Todo
-	mdb.Find(&todos)
-	return todos
+func (t *TodoModule) Destroy() {
+	mdb.Delete(&t.Todo)
+}
+
+func (t *TodoModule) Index(uid int64) {
+	mdb.Find(&t.Todos)
+}
+
+func (t *TodoModule) Decode(body io.Reader) {
+	_ = json.NewDecoder(body).Decode(&t)
+}
+
+func (t *TodoModule) EncodeOne() ([]byte, error) {
+	j, err := json.Marshal(t.Todo)
+	if err != nil {
+		return nil, err
+	}
+	return j, nil
+}
+
+func (t *TodoModule) EncodeMany() ([]byte, error) {
+	j, err := json.Marshal(t.Todos)
+	if err != nil {
+		return nil, err
+	}
+	return j, nil
 }
